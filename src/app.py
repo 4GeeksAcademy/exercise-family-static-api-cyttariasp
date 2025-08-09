@@ -29,6 +29,8 @@ def sitemap():
     return generate_sitemap(app)
 
 # Metodo creado por la academia
+
+
 @app.route('/members', methods=['GET'])
 def handle_hello():
     # This is how you can use the Family datastructure by calling its methods
@@ -37,42 +39,36 @@ def handle_hello():
     return jsonify(response_body), 200
 
 # metodo GET
+
+
 @app.route('/members/<int:member_id>', methods=['GET'])
 def get_one_member(member_id):
-    try:
-        member = jackson_family.get_member(member_id)
-        if member:
-            return jsonify(member), 200
-        else:
-            return jsonify({"error": "no se encontro el miembre"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    member = jackson_family.get_member(member_id)
+    if member:
+        return jsonify(member), 200
+    return jsonify({"error": "member not found"}), 404
 
 # metodo Post
+
+
 @app.route('/members', methods=['POST'])
 def add_member():
-    try:
-        member_data = request.get_json()
-        if not member_data or "first_name" not in member_data:
-            return jsonify({"error": "invalido"}), 400
-        
-        jackson_family.add_member(member_data)
-        return jsonify({"mensaje": "el miembro fue agregado con exito"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    member_data = request.get_json()
+    if not member_data or "first_name" not in member_data or "age" not in member_data or "lucky_numbers" not in member_data:
+        return jsonify({"error": "invalido"}), 400
+    
+    jackson_family.add_member(member_data)
+    return jsonify(member_data), 200
 
 
 # metodo DELET
 @app.route('/members/<int:member_id>', methods=['DELETE'])
 def delete_member(member_id):
-    try:
-        deleted = jackson_family.delete_member(member_id)
-        if deleted:
-            return jsonify({"done": True}), 200
-        else:
-            return jsonify({"error": "miembro no encontrado"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    deleted = jackson_family.delete_member(member_id)
+    if deleted:
+        return jsonify({"done": True}), 200
+    return jsonify({"error": "miembro no encontrado"}), 404
+
 
 # This only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
